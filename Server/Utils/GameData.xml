@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<GameData>
+	<ObjectCp>
+		<M1>
+			<MonNum>1</MonNum>
+			<MaxHp>50</MaxHp>
+			<Hp>50</Hp>
+			<HpIncrease>5</HpIncrease>
+			<Damage>15</Damage>
+			<DamageIncrease>3</DamageIncrease>
+			<Level>1</Level>
+			<Exp>0</Exp>
+			<MaxExp>100</MaxExp>
+			<RewardExp>20</RewardExp>
+		</M1>
+		<M2>
+			<MonNum>2</MonNum>
+			<MaxHp>70</MaxHp>
+			<Hp>70</Hp>
+			<HpIncrease>10</HpIncrease>
+			<Damage>15</Damage>
+			<DamageIncrease>5</DamageIncrease>
+			<Level>1</Level>
+			<Exp>0</Exp>
+			<MaxExp>100</MaxExp>
+			<RewardExp>30</RewardExp>
+		</M2>
+		<M3>
+			<MonNum>3</MonNum>
+			<MaxHp>90</MaxHp>
+			<Hp>90</Hp>
+			<HpIncrease>10</HpIncrease>
+			<Damage>35</Damage>
+			<DamageIncrease>7</DamageIncrease>
+			<Level>1</Level>
+			<Exp>0</Exp>
+			<MaxExp>100</MaxExp>
+			<RewardExp>45</RewardExp>
+		</M3>
+	</ObjectCp>
+	<Item>
+		<HpPotion>50</HpPotion>
+	</Item>
+</GameData>
