@@ -1,0 +1,14 @@
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\PacketTool.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\PacketTool.AssemblyInfoInputs.cache
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\PacketTool.AssemblyInfo.cs
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\PacketTool.csproj.CoreCompileInputs.cache
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\bin\Debug\net7.0\PacketTool.exe
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\bin\Debug\net7.0\PacketTool.deps.json
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\bin\Debug\net7.0\PacketTool.runtimeconfig.json
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\bin\Debug\net7.0\PacketTool.dll
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\bin\Debug\net7.0\PacketTool.pdb
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\PacketTool.dll
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\refint\PacketTool.dll
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\PacketTool.pdb
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\PacketTool.genruntimeconfig.cache
+C:\Users\user_derekop\Desktop\code\derekopP1Server\PacketTool\obj\Debug\net7.0\ref\PacketTool.dll

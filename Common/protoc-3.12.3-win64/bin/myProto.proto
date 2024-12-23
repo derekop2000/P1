@@ -1,0 +1,224 @@
+syntax = "proto3";
+package derekopProto;
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Google.Protobuf";
+
+
+enum PktId
+{
+	S_CHAT = 0;
+	C_CHAT = 1;
+	C_SIGNUP = 2;
+	S_SIGNUP = 3;
+	C_SIGNIN = 4;
+	S_SIGNIN = 5;
+	S_ENTER = 6;
+	S_SPAWN = 7;
+	C_MOVE = 8;
+	S_MOVE = 9;
+	S_DESPAWN = 10;
+	S_LEAVE = 11;
+	S_BATTLE = 12;
+	S_MONLIST = 13;
+	C_ATTACKTYPE = 14;
+	S_ATTACKRESULT = 15;
+	S_ALTERMAINMON = 16;
+	C_ALTERMAINMON = 17;
+	C_BATTLECOMPLETED = 18;
+	S_ITEMLIST = 19;
+	C_USEPOTION = 20;
+	S_USEPOTION = 21;
+	C_REQUESTBATTLE = 22;
+	S_NOTIFYBATTLEREQUEST = 23;
+	C_RESPONEBATTLEREQUEST = 24;
+	S_LEFTOPPONENT = 25;
+}
+message S_Chat
+{
+	int32 id = 1;
+	string str =2;
+}
+message C_Chat
+{
+	string str =1;
+}
+message C_SignUp
+{
+	string Id = 1;
+	string password = 2;
+}
+message S_SignUp
+{
+	int32 state = 1; // 0 - success , 1 - exist err, 2 - etc err
+}
+
+message C_SignIn
+{
+	string Id = 1;
+	string password = 2;
+}
+message S_SignIn
+{
+	int32 state = 1;  // 0 - success, 1 - not exist
+}
+message S_Enter
+{
+	int32 mapId = 1;
+	ObjectInfo objInfo = 2;
+}
+message S_Spawn
+{
+	repeated ObjectInfo objInfo = 1;
+}
+message C_Move
+{
+	Pos pos = 1;
+}
+message S_Move
+{
+	int32 objId =1;
+	Pos pos = 2;
+}
+message S_DeSpawn
+{
+	int32 objId = 1;
+}
+message S_Leave
+{
+
+}
+message S_Battle
+{
+	ObjectCP enemyCp = 1;
+}
+message S_MonList
+{
+	int32 mainId= 1;
+	repeated IdCp idcps =2;
+}
+message C_AttackType
+{
+	AttackType attackType = 1;
+}
+message S_AttackResult
+{
+	int32 result = 1; // 0 - ing , 1  - win , 2 - lose , 3 - draw , 4 - captureSuccess
+	int32 turnTime =2;
+	ObjectCP p = 3;
+	ObjectCP enemy = 4;
+}
+message S_AlterMainMon
+{
+	int32 id = 1;
+}
+message C_AlterMainMon
+{
+	int32 id = 1;
+}
+message C_BattleCompleted
+{
+
+}
+message S_ItemList
+{
+	int32 hpPotion = 1;
+}
+message C_UsePotion
+{
+
+}
+message S_UsePotion
+{
+
+}
+message C_RequestBattle
+{
+	int32 opponent =1;
+}
+message S_NotifyBattleRequest
+{
+	int32 opponent = 1;
+}
+
+message C_ResponeBattleRequest
+{
+	int32 p1 = 1;
+	int32 p2 = 2;
+}
+
+message S_LeftOpponent
+{
+	
+}
+// packet
+////////////////////////////////////////
+// common struct
+
+enum AttackType
+{
+	NOTHING = 0;
+	NORMALATTACK = 1;
+	SKILLATTACK = 2;
+	CAPTURE = 3;
+}
+
+enum ObjectType
+{
+	NORMAL =0;
+	PLAYER =1;
+	MONSTER=2;
+	PORTAL = 3;
+}
+
+enum ObjectState
+{
+	IDLE = 0;
+	MOVING = 1;
+	FIGHT = 2;
+	MANUAL = 3;
+}
+
+enum ObjectDir
+{
+	DOWN = 0;
+	UP = 1;
+	LEFT = 2;
+	RIGHT = 3;
+}
+
+message Pos
+{
+	int32 y = 1;
+	int32 x = 2;
+	ObjectDir dir = 3;
+}
+
+message ObjectInfo
+{
+	int32 objectId =1;
+	Pos objectPos = 2;
+	ObjectType objectType = 3;
+	ObjectState objectState = 4;
+	int32 monNum = 5;
+}
+
+message ObjectCP
+{
+	int32 maxHp = 1;
+	int32 hp = 2;
+	int32 hpIncrease = 3;
+    int32 damage =4;
+    int32 damageIncrease =5;
+    int32 monNum = 6;
+    int32 level=7;
+    int32 exp = 8;
+    int32 maxExp = 9;
+    int32 rewardExp = 10;
+}
+message IdCp
+{
+	int32 objId = 1;
+	ObjectCP cp =2;
+}
