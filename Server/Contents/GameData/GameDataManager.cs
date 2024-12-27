@@ -22,14 +22,14 @@ namespace Server.Contents.GameData
 
             var objCP = doc.Element("GameData").Element("ObjectCp");
 
-            M1 = SetObjectCP(objCP.Element("M1"));
-            M2 = SetObjectCP(objCP.Element("M2"));
-            M3 = SetObjectCP(objCP.Element("M3"));
+            M1 = LoadObjectCP(objCP.Element("M1"));
+            M2 = LoadObjectCP(objCP.Element("M2"));
+            M3 = LoadObjectCP(objCP.Element("M3"));
 
             HpPotion = int.Parse(doc.Element("GameData").Element("Item").Element("HpPotion").Value);
         }
 
-        private static ObjectCP SetObjectCP(XElement element)
+        private static ObjectCP LoadObjectCP(XElement element)
         {
             return new ObjectCP
             {

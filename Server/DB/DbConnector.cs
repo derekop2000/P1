@@ -14,9 +14,7 @@ namespace Server.DB
         public OdbcCommand _command;
         public DbConnector()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(ConfigurationManager.ConnectionStrings["DBconnect"].ConnectionString);
-            string op = sb.ToString();
+            string op = ConfigurationManager.ConnectionStrings["DBconnect"].ConnectionString;
             _connection = new OdbcConnection(op);
             _connection.Open();
 

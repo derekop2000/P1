@@ -92,9 +92,6 @@ namespace Packet
                     }
                 }
             }
-
-
-
             S_SignIn replyPkt = new S_SignIn();
             replyPkt.State = state;
             session.Send(replyPkt);

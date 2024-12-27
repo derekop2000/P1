@@ -70,7 +70,7 @@ namespace Server.Contents.Room
                 }
             } // to do 포탈 초기화 데이터화
             {
-                for (int j = 0; j < 0; j++)
+                for (int j = 0; j < 3; j++)
                 {
                     Monster m = new Monster(_mapId);
                     m._pos = _map.GetCenterCellPos();
