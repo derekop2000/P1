@@ -8,7 +8,7 @@
 
 ##  시연 영상
 
-...
+[시연 영상_구글 드라이브](https://drive.google.com/file/d/1Nl6-fbxYToXQnrF0xgkpePP2HvItqO6E/view?usp=drive_link)
 
 ---
 
