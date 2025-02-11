@@ -584,7 +584,7 @@
 ---
 ## 빌드 및 배포
 
-앞으로의 대규모 프로젝트를 고려하여 Jenkins를 활용한 Unity 빌드 자동화 및 배포 시스템을 경험했다. 이 시스템을 통해 소스 코드 변경 시 자동으로 빌드를 실행하고 배포하며 결과를 알림으로 받아볼 수 있다.
+대규모 프로젝트를 고려하여 Jenkins를 활용한 Unity 빌드 자동화 및 배포 시스템을 만들었다. 시스템을 통해 소스 코드 변경 시 자동으로 빌드를 실행하고 배포하며 결과를 알림으로 받는다.
 
 ### 빌드 과정의 3단계
 
@@ -606,6 +606,85 @@
 - Jenkins는 다양한 플러그인을 활용할 수 있어 더 많은 자동화 기능을 추가할 수 있다.
 - 테스트 자동화를 지원하는 플로그인을 사용해서 빌드 파일의 안정성을 배포전에 확인 할 수 있다.
 
+---
+## 이후 업데이트 사항
+
+### DotTrace & DotMemory 을 이용한 성능 프로파일링
+ 먼저 DotMemory 도구를 이용하여 분석을 했다
+ 
+ ![Image](https://github.com/user-attachments/assets/934a814c-c70d-4756-b832-e0cff3636567)
+ 
+ 사용자 레벨의 객체를 봤을 때 Job 객체가 빈번하게 생성되고 파괴되는 모습 따라서 이를 Job 풀링 방식으로 개선하면 GC 의 작동시간을 낮추어 성능이 좋아질 것이라고 예상했다.
+ 
+ Job 객체는 여러 타입의 델리게이트와 매개변수를 가진 오버로딩된 형태였기에 기존의 풀링 방식으로 관리하기 어려웠다.
+ 
+ 고민 끝에 공동 Action 필드를 만들었고 인자로 들어어는 Action 들은 람다 함수로 다시 정의하여 표준화된 Action 형태로 만들었다. 자세한 코드는 아래와 같다.
+ 
+  <details>
+      <summary>Job객체 풀링 코드</summary>
+        
+            public class Job
+            {
+                Action _action; // 공동 Action 타입
+                public void SetAct(Action action)
+                {
+                    _action = action;
+                }
+                public void SetAct<T1>(Action<T1> action, T1 t1)
+                {
+                    _action = () => { action(t1); };
+                }
+                public void SetAct<T1, T2>(Action<T1, T2> action, T1 t1, T2 t2)
+                {
+                    _action = () => { action(t1, t2); };
+                }
+            
+                public void Reset()
+                {
+                    _action = null;
+                }
+                public void Execute()
+                {
+                    _action();
+                }
+            }
+            
+            public class JobPool
+            {
+                private static JobPool _instance = new JobPool();
+            
+                public static JobPool Instance
+                {
+                    get { return _instance; }
+                }
+            
+                private Queue<Job> _pool = new Queue<Job>();
+            
+                public Job GetJob()
+                {
+                    if (_pool.Count > 0)
+                        return _pool.Dequeue();
+                    return new Job();
+                }
+            
+                public void Return(Job job)
+                {
+                    job.Reset();
+                    _pool.Enqueue(job);
+                }
+            }
+   </details>
+   
+ 코드 수정 후 분석
+ 
+ ![Image](https://github.com/user-attachments/assets/405101a6-caff-4fd1-9645-4bc1561d1af8)
+ 
+ 객체 생성 및 파괴 개수가 현저히 줄어들었다 DotTrace 도구로 확인한 결과 예상대로 해당 부분의 GC 작동 시간이 6.6% -> 0.8%로 줄어들었다.
+ 
+ 하지만 테스트 결과 응답시간은 2~3 % 올랐고 문제를 분석하기 위해 DotTrace로 분석했고 ExecutionContext 클래스의 Run 메서드 비중이 이전 보다 높아졌다.
+ 
+ 마이크로소프트 문서에서 확인해보니 람다 함수와 관련이 있었고 GC 실행 시간을 줄이는 것 보다 람다식을 캡쳐하는 과정에서 더 큰 오버헤드가 발생했음을 알 수 있었다.
+ 
 ---
 
 ## 느낀 점  
