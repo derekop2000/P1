@@ -609,7 +609,7 @@
 ---
 ## 이후 업데이트 사항
 
-### DotTrace & DotMemory 을 이용한 성능 프로파일링
+### 1. DotTrace & DotMemory 을 이용한 성능 프로파일링
  먼저 DotMemory 도구를 이용하여 분석을 했다
  
  ![Image](https://github.com/user-attachments/assets/934a814c-c70d-4756-b832-e0cff3636567)
@@ -679,11 +679,78 @@
  
  ![Image](https://github.com/user-attachments/assets/405101a6-caff-4fd1-9645-4bc1561d1af8)
  
- 객체 생성 및 파괴 개수가 현저히 줄어들었다 DotTrace 도구로 확인한 결과 예상대로 해당 부분의 GC 작동 시간이 6.6% -> 0.8%로 줄어들었다.
+ 객체 생성 및 파괴 개수가 현저히 줄어들었다 DotTrace 도구로 확인한 결과 예상대로 해당 부분의 `GC 실행시간 비중이 6.6% -> 0.8%`로 줄어들었다.
  
  하지만 테스트 결과 응답시간은 2~3 % 올랐고 문제를 분석하기 위해 DotTrace로 분석했고 ExecutionContext 클래스의 Run 메서드 비중이 이전 보다 높아졌다.
  
  마이크로소프트 문서에서 확인해보니 람다 함수와 관련이 있었고 GC 실행 시간을 줄이는 것 보다 람다식을 캡쳐하는 과정에서 더 큰 오버헤드가 발생했음을 알 수 있었다.
+
+
+### 2. 더블 버퍼링 기법을 활용한 성능 향상
+ 
+그래픽에서 사용되는 더블 버퍼링 기법을 활용해 JobQueue를 개선했다.
+
+기존에는 단일 버퍼에 다수의 스레드가 데이터를 저장하고 메인 스레드가 동시에 읽어 처리하는 방식이어서 읽기/쓰기 간의 충돌과 대기 시간이 발생했다.
+
+더블 버퍼링은 한 버퍼에서 데이터를 읽는 동안 다른 버퍼에 새로운 데이터를 저장할 수 있도록 하여 읽기와 쓰기를 동시에 진행할 수 있게 한다.
+
+이로 인해 메인 스레드가 데이터를 처리하는 동안에도 다른 스레드들이 계속해서 작업을 추가할 수 있어 전체 성능 향상이 기대된다.
+
+  <details>
+      <summary>JobQueue 개선 코드</summary>
+        
+      public class JobQueue
+      {
+          bool _isProcess = false;
+          object _lock = new object();
+          Queue<IJob> _queue = new Queue<IJob>();
+          Queue<IJob> _processQueue = new Queue<IJob>();
+          public void Push(Action _action) { Push(new Job(_action)); }
+          public void Push<T1>(Action<T1> _action, T1 _t1) { Push(new Job<T1>(_action, _t1)); }
+          public void Push(IJob job)
+          {
+              bool isProcess = false;
+              lock (_lock)
+              {
+                  _queue.Enqueue(job);
+                  if (_isProcess == false)
+                      isProcess = _isProcess = true;
+              }
+              if (isProcess == true)
+                  ProcessJob();
+          }
+      
+          public void ProcessJob()
+          {
+              while (true)
+              {
+                  lock (_lock)
+                  {
+                      var TempQueue = _processQueue;
+                      _processQueue = _queue;
+                      _queue = TempQueue;
+                      if (_processQueue.Count == 0)
+                      {
+                          _isProcess = false;
+                          return;
+                      }
+                  }
+      
+                  foreach (var job in _processQueue)
+                  {
+                      job.Execute();
+                  }
+                  _processQueue.Clear();
+              }
+          }
+      }
+   </details>
+
+ 코드 수정 후 분석
+ 여러 번의 테스트 결과 `응답 속도가 최소 1%에서 최대 4%까지 개선`되었다.
+ 
+ 이는 락 경합을 최소화하고 병렬성을 높인 결과로 예상한 대로 성능이 향상되었음을 보여준다. 
+ 
  
 ---
 
@@ -693,7 +760,7 @@
 
 서버에서 Send 나 Recv 같은 네트워크 I/O 작업은 생각보다 비용이 큰 작업이다. I/O 작업을 줄이거나 최적화할 수 있는 방법을 찾아야 한다
 
-잘 정의된 네이밍 규칙은 중요하다. 팀 혹은 과거의 나와 협업할 때 오류를 줄이고 유지 보수에 도움이 된다.
+잘 정의된 네이밍 규칙은 중요하다. 팀 혹은 자신의 코드 리뷰 시 오류를 줄이고 유지 보수에 도움이 된다.
 
 반복적인 작업을 자동화하는 방법은 오류를 줄이고 개발 시간을 크게 절약할 수 있다.
 
